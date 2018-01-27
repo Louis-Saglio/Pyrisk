@@ -79,13 +79,50 @@ def make_list():
     return [1, 2, 3, 4, 5]
 
 
-get_dice_result(10)
-get_dice_result_4(10)
-get_dice_result_2(10)
-get_dice_result_3(10)
-random_number()
-random_number_2()
-random_number_3()
+@helpers.parallel
+@helpers.chrono(10_000_000)
+def foo():
+    a = ["a"] * 20
+    return dict(zip(a, range(len(a))))
 
-make_tuple()
-make_list()
+
+@helpers.parallel
+@helpers.chrono(10_000_000)
+def foo_2():
+    a = ["a"] * 20
+    return {v: k for k, v in enumerate(a)}
+
+
+@helpers.parallel
+@helpers.chrono(1000000)
+def bar():
+    a = list()
+    for i in range(3):
+        a.append(i)
+    return a
+
+
+@helpers.parallel
+@helpers.chrono(1000000)
+def bar_2():
+    return [a for a in range(3)]
+
+
+# get_dice_result(10)
+# get_dice_result_4(10)
+# get_dice_result_2(10)
+# get_dice_result_3(10)
+# random_number()
+# random_number_2()
+# random_number_3()
+#
+# make_tuple()
+# make_list()
+
+
+# foo()
+# foo_2()
+
+
+bar()
+bar_2()
