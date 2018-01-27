@@ -1,5 +1,9 @@
 import random
 import statistics
+import multiprocessing as mp
+import resource
+
+from helpers import parallel, chrono
 
 
 def get_dice_result(dice_number, mini=1, maxi=6):
@@ -41,6 +45,7 @@ def fight(nbr_a, nbr_d):
     return nbr_a, nbr_d
 
 
+@chrono(1)
 def fight_n(nbr_a, nbr_d, nbr):
     sum_a, sum_d = [], []
     for _ in range(nbr):
@@ -50,5 +55,20 @@ def fight_n(nbr_a, nbr_d, nbr):
     return statistics.mean(sum_a), statistics.mean(sum_d)
 
 
+@parallel
+def a_fight(nbr_a, nbr_d, q):
+    q.put(fight(nbr_a, nbr_d))
+
+
+@chrono(1)
+def a_fight_n(nbr_a, nbr_d, nbr):
+    q = mp.Queue(nbr)
+    for _ in range(nbr):
+        a_fight(nbr_a, nbr_d, q)
+    return statistics.mean(q.get()[0] for _ in range(nbr))
+
+
 if __name__ == '__main__':
-    print(fight_n(11, 11, 10000))
+    print(resource.prlimit())
+    print(a_fight_n(300, 100, 500))
+    print(fight_n(300, 100, 500))
